@@ -30,20 +30,8 @@ jobs:
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo ">>> 拉取 gitlab/gitlab-ce:${VERSION} ..."
           docker pull "gitlab/gitlab-ce:${VERSION}"
-          echo ">>> 打标签 ghcr.io/${OWNER}/gitlab-ce:${VERSION} ..."
-          docker tag "gitlab/gitlab-ce:${VERSION}" "ghcr.io/${OWNER}/gitlab-ce:${VERSION}"
+          echo ">>> 打标签 ghcr.io/${OWNER}/gitlab-ce-mirror:${VERSION} ..."
+          docker tag "gitlab/gitlab-ce:${VERSION}" "ghcr.io/${OWNER}/gitlab-ce-mirror:${VERSION}"
           echo ">>> 推送到 GHCR ..."
-          docker push "ghcr.io/${OWNER}/gitlab-ce:${VERSION}"
+          docker push "ghcr.io/${OWNER}/gitlab-ce-mirror:${VERSION}"
           echo ">>> 完成"
-
-      - name: Make package public
-        run: |
-          set -e
-          gh api --method PATCH \
-            "/user/packages/container/gitlab-ce/visibility" \
-            -f visibility=public \
-            --silent \
-          && echo ">>> 已设为 public" \
-          || echo ">>> public 设置失败(可能已public或权限不足,稍后手动处理)"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
